@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IncomeReport" pageWidth="842" pageHeight="450" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="58d7bfca-c6ff-4547-96ce-f63e6ecf132b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="date1" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+     'From Appointments' AS Description,
+     COUNT(Invoice_Has_Appointment.Invoice_Invoice_ID) AS Transaction,
+     SUM(Service.Service_Price) AS Total_Amount
+
+FROM
+     `Invoice_Has_Appointment` Invoice_Has_Appointment
+inner join Invoice on Invoice_Has_Appointment.Invoice_Invoice_ID = Invoice.Invoice_ID
+inner join Appointment on Invoice_Has_Appointment.Appointment_Appointment_ID = Appointment.Appointment_ID
+inner join Appointment_has_Service on Appointment.Appointment_ID = Appointment_has_Service.Appointment_Appointment_ID
+inner join Service on Appointment_has_Service.Service_Service_ID = Service.Service_ID
+where Invoice.Invoice_Date = $P{date1} and Appointment.Status = 'Completed'
+
+UNION
+
+SELECT
+     'From Stocks' AS Description,
+     COUNT(Invoice_has_Stock.Invoice_Invoice_ID) AS Transaction,
+     SUM(Invoice_has_Stock.Quantity * Stock.Selling_Price) AS Total_Amount
+FROM
+     `Invoice_has_Stock` Invoice_has_Stock
+inner join Invoice on Invoice_has_Stock.Invoice_Invoice_ID = Invoice.Invoice_ID
+left join Stock on Invoice_has_Stock.Stock_Stock_ID = Stock.Stock_ID
+where Invoice.Invoice_Date = $P{date1}
+
+UNION
+
+SELECT
+     'From Services' AS Description,
+     COUNT(Invoice_has_Service.Invoice_Invoice_ID) AS Transaction,
+     SUM(Service.Service_Price) AS Total_Amount
+FROM
+     `Invoice_has_Service` Invoice_has_Service
+inner join Invoice on Invoice_has_Service.Invoice_Invoice_ID = Invoice.Invoice_ID
+left join Service on Invoice_has_Service.Service_Service_ID = Service.Service_ID
+where Invoice.Invoice_Date = $P{date1}]]>
+	</queryString>
+	<field name="Description" class="java.lang.String"/>
+	<field name="Transaction" class="java.lang.Long"/>
+	<field name="Total_Amount" class="java.math.BigDecimal"/>
+	<variable name="TotalIncome" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{Total_Amount}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="126" splitType="Stretch">
+			<staticText>
+				<reportElement x="289" y="73" width="243" height="20" uuid="e338ab69-d5ab-468f-b872-99ccf4969a05"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[17/1/1,Suderis Silva Mawatha,Horana]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="289" y="7" width="243" height="31" uuid="08b7ea55-33f8-48f2-93fe-9ab39cf531e4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INCOME REPORT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="304" y="93" width="210" height="20" uuid="ab1368ee-6d08-4d9d-9b66-1ce39a5bd659"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tel : 0779738000/0713856062]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="304" y="42" width="210" height="31" forecolor="#990099" uuid="833dfe2f-d813-40b1-9a5a-d313995b2241"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Salon Chandima]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="40">
+			<line>
+				<reportElement x="2" y="14" width="800" height="1" uuid="2e59f66e-ca4a-4092-b756-992ba2868393"/>
+			</line>
+			<line>
+				<reportElement x="2" y="39" width="802" height="1" uuid="4b9cfb9f-c36e-4f46-9cc0-787c085ad3d5"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="13" width="62" height="26" forecolor="#000000" uuid="f173ec5a-00ee-4f29-ba0a-db9ff5f41534"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="Arial" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Date]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="64" y="13" width="83" height="26" uuid="15837333-d50a-4bed-803d-36b90aba421a"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{date1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="0" width="62" height="26" forecolor="#000000" uuid="c943ea4a-07f0-4af6-86f9-1d24d73f000b"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Income]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="686" y="0" width="116" height="26" forecolor="#000000" uuid="12705bd0-5e6e-4270-a509-6595a6a87332"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="0" width="136" height="26" forecolor="#000000" uuid="4ad101c8-e398-429f-9b6c-3d1bdb0f6248"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Transactions]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="37" y="1" width="184" height="20" forecolor="#0066CC" uuid="78853f3c-fd04-4500-9de3-24f928fb28ce"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Description}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="503" y="1" width="108" height="20" forecolor="#0066CC" uuid="ada8103d-c0b6-481c-9483-e2a03565cc28"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Transaction}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;(-###0.00)" isBlankWhenNull="true">
+				<reportElement x="686" y="1" width="116" height="20" forecolor="#0066CC" uuid="595b9b2b-6cdf-4db3-869a-85253de1fab2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Total_Amount}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="21" width="802" height="1" uuid="c02371f4-289c-4b27-b6f2-c57aa1862668"/>
+			</line>
+		</band>
+	</detail>
+	<summary>
+		<band height="125" splitType="Stretch">
+			<staticText>
+				<reportElement x="34" y="20" width="187" height="31" forecolor="#000000" uuid="744c8556-c82a-45ee-93df-5ae522c7f3d5"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Income]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="10" width="802" height="2" backcolor="#660066" uuid="b4cbe677-d66e-4e6a-a0a2-ec4ee3fc6609"/>
+			</rectangle>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="686" y="20" width="116" height="31" forecolor="#000000" uuid="29bd54bb-ed0a-4036-84f5-d4d4afdac604"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TotalIncome}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="2" y="51" width="802" height="2" backcolor="#660066" uuid="7a90a49e-5f1e-4385-89ee-2c5ff3dc9454"/>
+			</rectangle>
+		</band>
+	</summary>
+</jasperReport>
